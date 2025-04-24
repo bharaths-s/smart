@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Player with Navigation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    .video-container {
+      margin-bottom: 20px;
+    }
+    video {
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .nav-buttons {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <video id="videoPlayer" width="840" height="560" controls>
+      <source id="videoSource" src="videos/rhymes.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <div class="controls">
+    <button onclick="playVideo(0)">Rhymes</button>
+    <button onclick="playVideo(1)">ABCD</button>
+    <button onclick="playVideo(2)">Kannada Rhymes</button>
+    <button onclick="playVideo(3)">Extra Video</button>
+  </div>
+  <div class="controls nav-buttons">
+    <button onclick="previousVideo()" id="prevBtn">Backward</button>
+    <button onclick="nextVideo()" id="nextBtn">Forward</button>
+    <!-- <button onclick="resetVideo()">Main Back</button> -->
+    <a href="ch2.html"><button>Back menu</button></a>
+  </div>
+
+  <script>
+    // Array of video objects
+    const videos = [
+      { src: 'videos/rhymes.mp4', title: 'Rhymes' },
+      { src: 'abc.mp4', title: 'ABCD' },
+      { src: 'videos/kannada_rhymes.mp4', title: 'Kannada Rhymes' },
+      { src: 'videos/extra_video.mp4', title: 'Extra Video' }
+    ];
+
+    let currentVideoIndex = 0;
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoSource = document.getElementById('videoSource');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Function to update video source and play
+    function playVideo(index) {
+      if (index >= 0 && index < videos.length) {
+        currentVideoIndex = index;
+        videoSource.src = videos[index].src;
+        videoPlayer.load();
+        videoPlayer.play();
+        updateButtons();
+      }
+    }
+
+    // Function to play the next video
+    function nextVideo() {
+      if (currentVideoIndex < videos.length - 1) {
+        playVideo(currentVideoIndex + 1);
+      }
+    }
+
+    // Function to play the previous video
+    function previousVideo() {
+      if (currentVideoIndex > 0) {
+        playVideo(currentVideoIndex - 1);
+      }
+    }
+
+    // Function to reset to the first video
+    function resetVideo() {
+      playVideo(0);
+    }
+
+    // Function to update button states
+    function updateButtons() {
+      prevBtn.disabled = currentVideoIndex === 0;
+      nextBtn.disabled = currentVideoIndex === videos.length - 1;
+    }
+
+    // Initialize button states
+    updateButtons();
+  </script>
+</body>
+</html>

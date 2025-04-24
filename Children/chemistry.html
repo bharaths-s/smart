@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Periodic Table Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fcff;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #005f73;
+    }
+    #question {
+      font-size: 30px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .option {
+      display: block;
+      margin: 10px auto;
+      width: 20%;
+      padding: 10px;
+      font-size: 25px;
+      background-color: #e0f7fa;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background-color: #b2ebf2;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    select {
+      padding: 8px;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    #backBtn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #backBtn:hover {
+      background-color: #004d40;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Periodic Table Quiz</h1>
+<p style="font-size:25px">Select difficulty and answer the question:</p>
+
+<select id="level" onchange="generateQuestion()">
+  <option value="easy">Easy</option>
+  <option value="medium">Medium</option>
+  <option value="hard">Hard</option>
+</select>
+
+<div id="question">Question goes here...</div>
+<div id="options"></div>
+<div id="result"></div>
+
+<button id="backBtn" onclick="goBack()">⬅ Back</button>
+
+<script>
+const questions = {
+  easy: [
+    {
+      question: "Which element has the symbol 'O'?",
+      answer: "Oxygen",
+      options: ["Oxygen", "Gold", "Hydrogen", "Iron"]
+    },
+    {
+      question: "Which element has the atomic number 1?",
+      answer: "Hydrogen",
+      options: ["Helium", "Oxygen", "Hydrogen", "Carbon"]
+    },
+    {
+      question: "Which gas is used in balloons?",
+      answer: "Helium",
+      options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Helium"]
+    },
+    {
+      question: "Which element has the symbol 'C'?",
+      answer: "Carbon",
+      options: ["Calcium", "Cobalt", "Carbon", "Chlorine"]
+    },
+    {
+      question: "Which element is a noble gas?",
+      answer: "Neon",
+      options: ["Oxygen", "Hydrogen", "Neon", "Nitrogen"]
+    }
+  ],
+  medium: [
+    {
+      question: "Which element is found in table salt?",
+      answer: "Sodium",
+      options: ["Sodium", "Chlorine", "Potassium", "Iron"]
+    },
+    {
+      question: "Which element has the symbol 'Fe'?",
+      answer: "Iron",
+      options: ["Fluorine", "Iron", "Fermium", "Francium"]
+    },
+    {
+      question: "Which element is essential for bones?",
+      answer: "Calcium",
+      options: ["Calcium", "Magnesium", "Zinc", "Copper"]
+    },
+    {
+      question: "Which element is used in pencils?",
+      answer: "Carbon",
+      options: ["Carbon", "Lead", "Graphite", "Tin"]
+    },
+    {
+      question: "Which element is used in batteries?",
+      answer: "Lithium",
+      options: ["Sodium", "Mercury", "Calcium", "Lithium"]
+    }
+  ],
+  hard: [
+    {
+      question: "Which radioactive gas is found underground?",
+      answer: "Radon",
+      options: ["Neon", "Radon", "Xenon", "Argon"]
+    },
+    {
+      question: "Which element is used in nuclear power plants?",
+      answer: "Uranium",
+      options: ["Plutonium", "Uranium", "Thorium", "Cobalt"]
+    },
+    {
+      question: "Which element has the symbol 'Pu'?",
+      answer: "Plutonium",
+      options: ["Phosphorus", "Platinum", "Plutonium", "Palladium"]
+    },
+    {
+      question: "Which element is used in aerospace materials?",
+      answer: "Beryllium",
+      options: ["Boron", "Beryllium", "Titanium", "Chromium"]
+    },
+    {
+      question: "Which element is extremely rare and radioactive?",
+      answer: "Francium",
+      options: ["Francium", "Radium", "Ruthenium", "Polonium"]
+    }
+  ]
+};
+
+let currentAnswer = "";
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function generateQuestion() {
+  document.getElementById("result").textContent = "";
+
+  const level = document.getElementById("level").value;
+  const quiz = questions[level];
+  const q = quiz[Math.floor(Math.random() * quiz.length)];
+  currentAnswer = q.answer;
+
+  document.getElementById("question").textContent = q.question;
+
+  const shuffledOptions = shuffle([...q.options]);
+
+  const optionsHTML = shuffledOptions.map(opt =>
+    `<div class="option" onclick="checkAnswer('${opt}')">${opt}</div>`
+  ).join("");
+
+  document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function checkAnswer(selected) {
+  const result = document.getElementById("result");
+  if (selected === currentAnswer) {
+    result.textContent = "✅ Correct!";
+    result.style.color = "green";
+  } else {
+    result.textContent = "❌ Incorrect. Correct answer: " + currentAnswer;
+    result.style.color = "red";
+  }
+
+  setTimeout(generateQuestion, 1500);
+}
+
+function goBack() {
+  window.location.href = "ch2.html"; // Change to your actual menu page
+}
+
+generateQuestion();
+</script>
+
+</body>
+</html>

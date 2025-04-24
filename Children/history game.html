@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Historical Places Quiz</title>
+    <style>
+        body {
+            background-color: #ffeb99;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0;
+        }
+        #game-container {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 32px;
+            max-width: 95%;
+            width: 100%;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 46px;
+            color: #6b21a8;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: #ca8a04;
+        }
+        #place-image {
+            width: 50%;
+            max-height: 350px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 4px solid #93c5fd;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .option {
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-align: center;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        <!-- .option:hover {
+            transform: scale(1.05);
+        } -->
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .red { background-color: #f87171; }
+        .red:hover { background-color: #ef4444; }
+        .blue { background-color: #60a5fa; }
+        .blue:hover { background-color: #3b82f6; }
+        .green { background-color: #4ade80; }
+        .green:hover { background-color: #22c55e; }
+        .yellow { background-color: #facc15; }
+        .yellow:hover { background-color: #eab308; }
+        .correct { background-color: #16a34a; }
+        .wrong { background-color: #dc2626; }
+        #feedback {
+            margin-top: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .animate-bounceIn {
+            animation: bounceIn 0.5s ease-out;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 20px;
+            font-size: 16px;
+          }
+        .main-back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #cb0bb8;
+
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='ch2.html'" class="button main-back-btn">← Back to Main</button>
+    <div id="game-container" class="animate-bounceIn">
+        <h1>🌍 History Quiz! 🌟</h1>
+        <div class="header">
+            <span style="font-size: 36px;">Score: <span id="score-value">0</span> 🏆</span>
+            <span style="font-size:36px";>Question: <span id="question-number">1</span>/<span id="total-questions"></span> ❓</span>
+        </div>
+        <img id="place-image" src="images/taj_mahal.jpg" alt="Historical Place">
+        <div id="options">
+            <button class="option red" onclick="checkAnswer(0)"></button>
+            <button class="option blue" onclick="checkAnswer(1)"></button>
+            <button class="option green" onclick="checkAnswer(2)"></button>
+            <button class="option yellow" onclick="checkAnswer(3)"></button>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        const places = [
+            {
+                name: "Taj Mahal",
+                image: "tagmahal.png",
+                options: ["Taj Mahal", "Eiffel Tower", "Colosseum", "Great Wall"]
+            },
+            {
+                name: "Pyramids of Giza",
+                image: "pyramds of giza.png",
+                options: ["Pyramids of Giza", "Machu Picchu", "Petra", "Stonehenge"]
+            },
+            {
+                name: "Colosseum",
+                image: "colosum.png",
+                options: ["Colosseum", "Parthenon", "Chichen Itza", "Angkor Wat"]
+            },
+            {
+                name: "Machu Picchu",
+                image: "machupichu.png",
+                options: ["Machu Picchu", "Great Wall", "Taj Mahal", "Petra"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let shuffledPlaces = [...places];
+
+        // Sound effects (local files)
+        const correctSound = new Audio('sounds/correct.mp3');
+        const wrongSound = new Audio('sounds/wrong.mp3');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= shuffledPlaces.length) {
+                document.getElementById('game-container').innerHTML = `
+                    <h1 style="font-size: 24px; color: #6b21a8; text-align: center; margin-bottom: 16px;">Game Over! 🎉</h1>
+                    <p style="font-size: 16px; text-align: center; color: #ca8a04;">You got <span style="color: #2563eb;">${score}</span> out of ${shuffledPlaces.length} right! 🥳</p>
+                    <button onclick="location.reload()" style="margin-top: 16px; background-color: #2563eb; color: white; padding: 8px 24px; border-radius: 9999px; font-size: 16px; font-weight: bold; border: none; cursor: pointer;">Play Again! 🔄</button>
+                `;
+                return;
+            }
+
+            const place = shuffledPlaces[currentQuestion];
+            document.getElementById('place-image').src = place.image;
+            const options = [...place.options];
+            shuffle(options);
+
+            const buttons = document.getElementsByClassName('option');
+            const colors = ['red', 'blue', 'green', 'yellow'];
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].textContent = options[i];
+                buttons[i].className = `option ${colors[i]}`;
+                buttons[i].disabled = false;
+            }
+
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('question-number').textContent = currentQuestion + 1;
+            document.getElementById('total-questions').textContent = shuffledPlaces.length;
+        }
+
+        function checkAnswer(index) {
+            const selectedOption = document.getElementsByClassName('option')[index].textContent;
+            const correctAnswer = shuffledPlaces[currentQuestion].name;
+            const feedback = document.getElementById('feedback');
+            const buttons = document.getElementsByClassName('option');
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                feedback.textContent = 'Yay! You got it! 🎉';
+                feedback.style.color = '#16a34a';
+                document.getElementById('score-value').textContent = score;
+                buttons[index].classList.add('correct');
+                correctSound.play();
+            } else {
+                feedback.textContent = `Oops! It's ${correctAnswer}. Try again! 😊`;
+                feedback.style.color = '#dc2626';
+                buttons[index].classList.add('wrong');
+                for (let i = 0; i < buttons.length; i++) {
+                    if (buttons[i].textContent === correctAnswer) {
+                        buttons[i].classList.add('correct');
+                    }
+                }
+                wrongSound.play();
+            }
+
+            for (let button of buttons) {
+                button.disabled = true;
+            }
+
+            setTimeout(nextQuestion, 2000); // Auto-advance after 2 seconds
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        // Add touch support for TFT
+        const buttons = document.getElementsByClassName('option');
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent default touch behavior
+                checkAnswer(i);
+            });
+        }
+
+        // Initialize game
+        shuffle(shuffledPlaces);
+        loadQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Slider Game</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #fefcbf, #fefcbf, #fefcbf);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        .container {
+            width: 400%;
+            max-width: 1020px;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d90429;
+            margin-bottom: 1rem;
+        }
+        .level-selection {
+            margin-bottom: 1rem;
+        }
+        .level-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #9333ea;
+            margin-bottom: 0.5rem;
+        }
+        .button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            font-size: 1.5rem;
+        }
+        .button:hover {
+            filter: brightness(90%);
+        }
+        .easy-btn { background: #60a5fa; }
+        .medium-btn { background: #f97316; }
+        .hard-btn { background: #ef4444; }
+        .reset-btn { background: #f4a261; }
+        .back-btn { background: #6b7280; }
+        .game-grid {
+            display: grid;
+            gap: 0.25rem;
+            width: 300px;
+            margin: 0 auto;
+        }
+        .tile {
+            width: 100px;
+            height: 100px;
+            border-radius: 0.25rem;
+            color: white;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 2.5rem;
+        }
+        .tile-empty { background: #e5e7eb; }
+        .tile-normal { background: #60a5fa; }
+        .feedback {
+            margin-top: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d90429;
+        }
+        .score {
+            margin-top: 0.5rem;
+            font-size: 3rem;
+            color: #2a9d8f;
+            font-weight: bold;
+        }
+        .button-container {
+            margin-top: 0.5rem; 
+            display: flex; 
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .main-back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #cb0bb8;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='ch2.html'" class="button main-back-btn">← Back to Main</button>
+    <div class="container">
+        <h1 class="title">Puzzle Slider 🧩</h1>
+        <div id="levelSelection" class="level-selection">
+            <h2 class="level-title">Choose Your Level</h2>
+            <button onclick="startGame('easy')" ontouchstart="startGame('easy')" class="button easy-btn">Easy (3x3)</button>
+            <button onclick="startGame('medium')" ontouchstart="startGame('medium')" class="button medium-btn">Medium (3x3)</button>
+            <button onclick="startGame('hard')" ontouchstart="startGame('hard')" class="button hard-btn">Hard (4x4)</button>
+        </div>
+        <div id="gameContent" class="text-center"></div>
+        <div id="feedback" class="feedback"></div>
+        <div class="button-container">
+            <button id="resetBtn" onclick="resetGame()" ontouchstart="resetGame()" class="button reset-btn" style="display: none;">Reset Game</button>
+            <button id="backBtn" onclick="goBack()" ontouchstart="goBack()" class="button back-btn" style="display: none;">Back to Menu</button>
+        </div>
+        <p id="score" class="score">Moves: 0 | Coins: 0</p>
+    </div>
+
+    <script>
+        let currentLevel = '';
+        let moves = 0;
+        let board = [];
+        let size = 0;
+        let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 0;
+
+        const puzzles = {
+            easy: [1, 2, 3, 4, 5, 6, 7, 8, 0],
+            medium: [1, 2, 3, 4, 5, 6, 8, 7, 0],
+            hard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 14, 0]
+        };
+
+        function isSolvable(board, size) {
+            let inversions = 0;
+            for (let i = 0; i < board.length; i++) {
+                for (let j = i + 1; j < board.length; j++) {
+                    if (board[i] && board[j] && board[i] > board[j]) inversions++;
+                }
+            }
+            const emptyRow = Math.floor(board.indexOf(0) / size);
+            return (inversions % 2 === 0) === ((size - emptyRow) % 2 === 1);
+        }
+
+        function shuffleBoard() {
+            do {
+                for (let i = board.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [board[i], board[j]] = [board[j], board[i]];
+                }
+            } while (!isSolvable(board, size));
+        }
+
+        function startGame(level) {
+            currentLevel = level;
+            moves = 0;
+            size = level === 'hard' ? 4 : 3;
+            board = [...puzzles[level]];
+            shuffleBoard();
+            updateScore();
+            renderBoard();
+            document.getElementById('resetBtn').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('levelSelection').style.display = 'none';
+        }
+
+        function renderBoard() {
+            const gameContent = document.getElementById('gameContent');
+            const tileSize = size === 4 ? '75px' : '100px';
+            gameContent.innerHTML = `
+                <div class="game-grid" style="grid-template-columns: repeat(${size}, ${tileSize});">
+                    ${board.map((num, idx) => `
+                        <button 
+                            onclick="moveTile(${idx})" 
+                            ontouchstart="moveTile(${idx})"
+                            class="tile ${num === 0 ? 'tile-empty' : 'tile-normal'}"
+                            style="width: ${tileSize}; height: ${tileSize};"
+                            ${num === 0 ? 'disabled' : ''}
+                        >${num === 0 ? '' : num}</button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function moveTile(index) {
+            const emptyIndex = board.indexOf(0);
+            const rowSize = size;
+            const validMoves = [
+                emptyIndex - rowSize,
+                emptyIndex + rowSize,
+                emptyIndex - 1,
+                emptyIndex + 1
+            ].filter(i => i >= 0 && i < board.length && 
+                (Math.floor(i / rowSize) === Math.floor(emptyIndex / rowSize) || 
+                 i === emptyIndex - rowSize || i === emptyIndex + rowSize));
+
+            if (validMoves.includes(index)) {
+                [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
+                moves++;
+                updateScore();
+                renderBoard();
+                checkWin();
+            } else {
+                document.getElementById('feedback').innerHTML = 'Try another tile!';
+                document.getElementById('feedback').style.color = '#d90429';
+                setTimeout(() => {
+                    document.getElementById('feedback').innerHTML = '';
+                    document.getElementById('feedback').style.color = '';
+                }, 1000);
+            }
+        }
+
+        function checkWin() {
+            const solved = puzzles[currentLevel].every((num, i) => num === board[i]);
+            if (solved) {
+                coins += 5;
+                localStorage.setItem('coins', coins);
+                document.getElementById('feedback').innerHTML = `Yay! You won 5 coins in ${moves} moves! 🎉`;
+                document.getElementById('feedback').style.color = '#2a9d8f';
+                setTimeout(() => resetGame(), 2000);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Moves: ${moves} | Coins: ${coins}`;
+        }
+
+        function resetGame() {
+            document.getElementById('gameContent').innerHTML = '';
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('feedback').style.color = '';
+            document.getElementById('resetBtn').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('levelSelection').style.display = 'block';
+            moves = 0;
+            currentLevel = '';
+            updateScore();
+        }
+
+        function goBack() {
+            resetGame();
+        }
+    </script>
+</body>
+</html>

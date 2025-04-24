@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Biology Quiz - Levels</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e8f5e9;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    #levelSelect {
+      margin-bottom: 20px;
+      font-size: 20px;
+      padding: 5px;
+    }
+    #question {
+      font-size: 35px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .option {
+      background-color: #c8e6c9;
+      margin: 10px auto;
+      width: 20%;
+      padding: 10px;
+      font-size: 35px;
+      border: 2px solid #81c784;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background-color: #a5d6a7;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    #backBtn {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 10px 20px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #backBtn:hover {
+      background-color: #66bb6a;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Biology Quiz</h1>
+
+<select id="levelSelect" onchange="startLevel()">
+  <option value="">Select Level</option>
+  <option value="easy">Easy</option>
+  <option value="medium">Medium</option>
+  <option value="hard">Hard</option>
+</select>
+
+<div id="question"></div>
+<div id="options"></div>
+<div id="result"></div>
+
+<button id="backBtn" onclick="goBack()">⬅ Back</button>
+
+<script>
+  const levels = {
+    easy: [
+      {
+        definition: "The basic unit of life",
+        answer: "Cell",
+        choices: ["Atom", "Tissue", "Organ", "Cell"]
+      },
+      {
+        definition: "Process by which plants make food",
+        answer: "Photosynthesis",
+        choices: ["Respiration", "Photosynthesis", "Digestion", "Absorption"]
+      },
+      {
+        definition: "Organ that pumps blood",
+        answer: "Heart",
+        choices: ["Liver", "Lung", "Heart", "Kidney"]
+      },
+      {
+        definition: "Green pigment in leaves",
+        answer: "Chlorophyll",
+        choices: ["Xylem", "Chlorophyll", "Stomata", "Mitochondria"]
+      },
+      {
+        definition: "Connects bones together at joints",
+        answer: "Ligament",
+        choices: ["Tendon", "Ligament", "Cartilage", "Muscle"]
+      }
+    ],
+    medium: [
+      {
+        definition: "Organ where digestion starts",
+        answer: "Mouth",
+        choices: ["Mouth", "Stomach", "Liver", "Intestine"]
+      },
+      {
+        definition: "Controls activities of the cell",
+        answer: "Nucleus",
+        choices: ["Cytoplasm", "Membrane", "Nucleus", "Ribosome"]
+      },
+      {
+        definition: "Blood cells that fight infection",
+        answer: "White blood cells",
+        choices: ["Red blood cells", "White blood cells", "Platelets", "Plasma"]
+      },
+      {
+        definition: "Tube carrying food to stomach",
+        answer: "Esophagus",
+        choices: ["Windpipe", "Esophagus", "Trachea", "Intestine"]
+      },
+      {
+        definition: "Removes waste from blood",
+        answer: "Kidney",
+        choices: ["Liver", "Lung", "Heart", "Kidney"]
+      }
+    ],
+    hard: [
+      {
+        definition: "Transports water in plants",
+        answer: "Xylem",
+        choices: ["Phloem", "Vein", "Stomata", "Xylem"]
+      },
+      {
+        definition: "Organism that can make its own food",
+        answer: "Autotroph",
+        choices: ["Heterotroph", "Herbivore", "Omnivore", "Autotroph"]
+      },
+      {
+        definition: "Tiny hair-like structures that move mucus",
+        answer: "Cilia",
+        choices: ["Flagella", "Cilia", "Pores", "Villi"]
+      },
+      {
+        definition: "Energy factory of the cell",
+        answer: "Mitochondria",
+        choices: ["Ribosome", "Nucleus", "Mitochondria", "Golgi body"]
+      },
+      {
+        definition: "Process where cells divide to form two identical cells",
+        answer: "Mitosis",
+        choices: ["Meiosis", "Fusion", "Mitosis", "Cloning"]
+      }
+    ]
+  };
+
+  let currentLevel = [];
+  let currentIndex = 0;
+
+  function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+  }
+
+  function startLevel() {
+    const selected = document.getElementById("levelSelect").value;
+    if (!selected) return;
+
+    currentLevel = [...levels[selected]];
+    currentIndex = 0;
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = currentLevel[currentIndex];
+    document.getElementById("question").textContent = q.definition;
+    document.getElementById("result").textContent = "";
+
+    const shuffled = shuffle([...q.choices]);
+
+    document.getElementById("options").innerHTML = shuffled.map(choice => `
+      <div class="option" onclick="checkAnswer('${choice}')">${choice}</div>
+    `).join('');
+  }
+
+  function checkAnswer(selected) {
+    const correct = currentLevel[currentIndex].answer;
+    const result = document.getElementById("result");
+
+    if (selected === correct) {
+      result.textContent = "✅ Correct!";
+      result.style.color = "green";
+    } else {
+      result.textContent = "❌ Incorrect! Answer: " + correct;
+      result.style.color = "red";
+    }
+
+    currentIndex++;
+    if (currentIndex < currentLevel.length) {
+      setTimeout(showQuestion, 1500);
+    } else {
+      setTimeout(() => {
+        document.getElementById("question").textContent = "🎉 You've completed this level!";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("result").textContent = "";
+      }, 1500);
+    }
+  }
+
+  function goBack() {
+    window.location.href = "ch2.html"; // Change this to your actual menu file
+  }
+</script>
+
+</body>
+</html>

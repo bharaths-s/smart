@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixel Art Creator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+    }
+    h1 {
+      margin: 20px;
+    }
+    #palette {
+      margin: 10px auto;
+    }
+    .color {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      margin: 2px;
+      border: 2px solid #000;
+      cursor: pointer;
+    }
+    #canvas {
+      display: grid;
+      grid-template-columns: repeat(16, 40px); /* Increased block size */
+      gap: 1px;
+      margin: 20px auto;
+      width: max-content;
+    }
+    .pixel {
+      width: 40px; /* Increased block size */
+      height: 40px; /* Increased block size */
+      background: white;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 20px;
+      font-size: 16px;
+    }
+    .main-back-btn {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: #cb0bb8;
+    }
+  </style>
+</head>
+<body>
+<button onclick="window.location.href='ch2.html'" class="button main-back-btn">← Back to Main</button>
+<h1>🎨 Pixel Art Creator</h1>
+<div id="palette"></div>
+<div id="canvas"></div>
+<button onclick="clearCanvas()">Clear</button>
+
+<script>
+  const colors = ["black", "red", "green", "blue", "yellow", "purple", "orange", "pink"];
+  let currentColor = colors[0];
+
+  const palette = document.getElementById("palette");
+  colors.forEach(color => {
+    const swatch = document.createElement("div");
+    swatch.className = "color";
+    swatch.style.background = color;
+    swatch.onclick = () => currentColor = color;
+    palette.appendChild(swatch);
+  });
+
+  const canvas = document.getElementById("canvas");
+  for (let i = 0; i < 16 * 16; i++) {
+    const pixel = document.createElement("div");
+    pixel.className = "pixel";
+    pixel.onclick = () => pixel.style.background = currentColor;
+    canvas.appendChild(pixel);
+  }
+
+  function clearCanvas() {
+    document.querySelectorAll(".pixel").forEach(p => p.style.background = "white");
+  }
+</script>
+
+</body>
+</html>

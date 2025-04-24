@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Physics Quiz - Levels</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e3f2fd;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #1565c0;
+    }
+    #levelSelect {
+      margin-bottom: 20px;
+      font-size: 20px;
+      padding: 5px;
+    }
+    #question {
+      font-size: 35px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .option {
+      background-color: #bbdefb;
+      margin: 10px auto;
+      width: 40%;
+      padding: 10px;
+      font-size: 25px;
+      border: 2px solid #64b5f6;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background-color: #90caf9;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    #backBtn {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 10px 20px;
+      background-color: #64b5f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #backBtn:hover {
+      background-color: #42a5f5;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Physics Quiz</h1>
+
+<select id="levelSelect" onchange="startLevel()">
+  <option value="">Select Level</option>
+  <option value="easy">Easy</option>
+  <option value="medium">Medium</option>
+  <option value="hard">Hard</option>
+</select>
+
+<div id="question"></div>
+<div id="options"></div>
+<div id="result"></div>
+
+<button id="backBtn" onclick="goBack()">⬅ Back</button>
+
+<script>
+  const levels = {
+    easy: [
+      {
+        definition: "Force that pulls objects toward Earth",
+        answer: "Gravity",
+        choices: ["Magnetism", "Electricity", "Friction", "Gravity"]
+      },
+      {
+        definition: "A push or a pull",
+        answer: "Force",
+        choices: ["Energy", "Power", "Force", "Work"]
+      },
+      {
+        definition: "Energy possessed by a moving object",
+        answer: "Kinetic energy",
+        choices: ["Potential energy", "Thermal energy", "Kinetic energy", "Light energy"]
+      },
+      {
+        definition: "Material that does not let electricity flow easily",
+        answer: "Insulator",
+        choices: ["Conductor", "Metal", "Insulator", "Switch"]
+      },
+      {
+        definition: "Change in position over time",
+        answer: "Motion",
+        choices: ["Speed", "Motion", "Friction", "Time"]
+      }
+    ],
+    medium: [
+      {
+        definition: "Instrument to measure temperature",
+        answer: "Thermometer",
+        choices: ["Thermostat", "Thermometer", "Barometer", "Altimeter"]
+      },
+      {
+        definition: "The rate of doing work",
+        answer: "Power",
+        choices: ["Speed", "Energy", "Power", "Force"]
+      },
+      {
+        definition: "Unit of electric current",
+        answer: "Ampere",
+        choices: ["Volt", "Ohm", "Ampere", "Watt"]
+      },
+      {
+        definition: "Friction produces this form of energy",
+        answer: "Heat",
+        choices: ["Sound", "Light", "Heat", "Magnetism"]
+      },
+      {
+        definition: "Mirror that bulges outward",
+        answer: "Convex mirror",
+        choices: ["Concave mirror", "Convex mirror", "Flat mirror", "Plane mirror"]
+      }
+    ],
+    hard: [
+      {
+        definition: "Law: Every action has an equal and opposite reaction",
+        answer: "Newton's third law",
+        choices: ["Newton's first law", "Newton's third law", "Law of inertia", "Law of gravity"]
+      },
+      {
+        definition: "Speed in a given direction",
+        answer: "Velocity",
+        choices: ["Speed", "Acceleration", "Displacement", "Velocity"]
+      },
+      {
+        definition: "Measure of the force of gravity on an object",
+        answer: "Weight",
+        choices: ["Mass", "Force", "Weight", "Density"]
+      },
+      {
+        definition: "Bending of light as it passes through a medium",
+        answer: "Refraction",
+        choices: ["Reflection", "Dispersion", "Refraction", "Diffusion"]
+      },
+      {
+        definition: "A device that converts electrical energy to mechanical energy",
+        answer: "Electric motor",
+        choices: ["Electric motor", "Generator", "Transformer", "Battery"]
+      }
+    ]
+  };
+
+  let currentLevel = [];
+  let currentIndex = 0;
+
+  function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+  }
+
+  function startLevel() {
+    const selected = document.getElementById("levelSelect").value;
+    if (!selected) return;
+
+    currentLevel = [...levels[selected]];
+    currentIndex = 0;
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = currentLevel[currentIndex];
+    document.getElementById("question").textContent = q.definition;
+    document.getElementById("result").textContent = "";
+
+    const shuffled = shuffle([...q.choices]);
+
+    document.getElementById("options").innerHTML = shuffled.map(choice => `
+      <div class="option" onclick="checkAnswer('${choice}')">${choice}</div>
+    `).join('');
+  }
+
+  function checkAnswer(selected) {
+    const correct = currentLevel[currentIndex].answer;
+    const result = document.getElementById("result");
+
+    if (selected === correct) {
+      result.textContent = "✅ Correct!";
+      result.style.color = "green";
+    } else {
+      result.textContent = "❌ Incorrect! Answer: " + correct;
+      result.style.color = "red";
+    }
+
+    currentIndex++;
+    if (currentIndex < currentLevel.length) {
+      setTimeout(showQuestion, 1500);
+    } else {
+      setTimeout(() => {
+        document.getElementById("question").textContent = "🎉 You've completed this level!";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("result").textContent = "";
+      }, 1500);
+    }
+  }
+
+  function goBack() {
+    window.location.href = "ch2.html"; // You can replace this with your actual menu page
+  }
+</script>
+
+</body>
+</html>

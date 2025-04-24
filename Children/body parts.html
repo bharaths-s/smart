@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Body Parts Game for Kids</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: white;
+            margin: 0;
+            padding: 8px;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #d81b60;
+            font-size: 2em;
+            margin: 8px;
+        }
+        #game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #e6ff88;
+            padding: 8px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        #body-part-image {
+            width: 800px;
+            height: 356px;
+            object-fit: contain;
+            margin: 10px;
+            border: 3px solid #ffca28;
+            border-radius: 10px;
+            background-color: white;
+        }
+        #question {
+            font-size: 1.5em;
+            color: #4a148c;
+            margin: 8px;
+        }
+        .option {
+            display: inline-block;
+            width: 120px;
+            height: 60px;
+            margin: 5px;
+            font-size: 1.2em;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 60px;
+            transition: all 0.2s;
+        }
+        .option:nth-child(1) { background-color: #f44336; }
+        .option:nth-child(2) { background-color: #2196f3; }
+        .option:nth-child(3) { background-color: #4caf50; }
+        .option:nth-child(4) { background-color: #ffeb3b; color: #333; }
+        .option:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        #feedback {
+            font-size: 1.5em;
+            margin: 10px;
+            color: #e65100;
+            min-height: 30px;
+        }
+        #score {
+            font-size: 1.2em;
+            color: #ad1457;
+            margin: 8px;
+        }
+        #game-complete {
+            font-size: 1.8em;
+            color: #d81b60;
+            margin: 15px;
+            display: none;
+        }
+        .back-button {
+            background-color: #ff69b4;
+            font-size: 1.5em;
+            font-family: 'Comic Sans MS', sans-serif;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #db7093;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Body Parts Fun!</h1>
+        <p id="score">Score: <span id="score-value">0</span></p>
+        <img id="body-part-image" src="" alt="Body Part">
+        <p id="question">Tap a button to answer!</p>
+        <div id="options"></div>
+        <p id="feedback"></p>
+        <p id="game-complete">You've completed all body parts! Great job!</p>
+    </div>
+    <a href="ch2.html" class="back-button" ontouchstart="window.location.href='kids_fun_learning.html'">⬅️ Back</a>
+
+    <script>
+        const bodyParts = [
+            { name: "Hand", image: "hand.jpeg" },
+            { name: "Foot", image: "foot.jpeg" },
+            { name: "Eye", image: "eye.jpeg" },
+            { name: "Nose", image: "nose.jpeg" },
+            { name: "Ear", image: "ear.jpg" },
+            { name: "Mouth", image: "mouth.jpeg" },
+            { name: "Arm", image: "arm.png" },
+            { name: "Leg", image: "leg.jpeg" },
+            { name: "Head", image: "head.png" },
+            { name: "Finger", image: "finger.jpeg" },
+            { name: "Toe", image: "toe.jpeg" },
+            { name: "Teeth", image: "teeth.jpeg" },
+            { name: "Tongue", image: "tongue.jpeg" },
+            { name: "Knee", image: "knee.jpg" },
+            { name: "Elbow", image: "elbow.jpg" }
+        ];
+
+        let score = 0;
+        let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+        let currentPart;
+        let answered = false;
+        let remainingParts = [...bodyParts];
+
+        function startGame() {
+            if (remainingParts.length === 0) {
+                document.getElementById('game-complete').style.display = 'block';
+                document.getElementById('options').innerHTML = '';
+                document.getElementById('question').textContent = '';
+                document.getElementById('body-part-image').style.display = 'none';
+                return;
+            }
+
+            answered = false;
+            document.getElementById('feedback').textContent = '';
+
+            const randomIndex = Math.floor(Math.random() * remainingParts.length);
+            currentPart = remainingParts[randomIndex];
+            remainingParts.splice(randomIndex, 1);
+
+            document.getElementById('body-part-image').src = currentPart.image;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            const optionsPool = [...bodyParts];
+            shuffleArray(optionsPool);
+
+            const selectedOptions = [];
+            for (let i = 0; i < optionsPool.length && selectedOptions.length < 3; i++) {
+                if (optionsPool[i].name !== currentPart.name && !selectedOptions.some(opt => opt.name === optionsPool[i].name)) {
+                    selectedOptions.push(optionsPool[i]);
+                }
+            }
+
+            selectedOptions.push(currentPart);
+            shuffleArray(selectedOptions);
+
+            selectedOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option.name;
+                button.onclick = () => {
+                    if (!answered) {
+                        checkAnswer(option.name);
+                        answered = true;
+                    }
+                };
+                button.ontouchstart = () => {
+                    if (!answered) {
+                        checkAnswer(option.name);
+                        answered = true;
+                    }
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function checkAnswer(selected) {
+            const feedback = document.getElementById('feedback');
+            if (selected === currentPart.name) {
+                feedback.textContent = 'Wow, great job! 🎉';
+                feedback.style.color = '#2e7d32';
+                score++;
+                totalCoins += 5;
+                localStorage.setItem('totalCoins', totalCoins);
+            } else {
+                feedback.textContent = `Oops, it's a ${currentPart.name}! 😔`;
+                feedback.style.color = '#c62828';
+            }
+            document.getElementById('score-value').textContent = score;
+            setTimeout(startGame, 1500);
+        }
+
+        window.onload = startGame;
+    </script>
+</body>
+</html>

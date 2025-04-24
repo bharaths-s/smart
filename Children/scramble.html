@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Scramble</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            margin: 0;
+            padding: 5px;
+        }
+        .container {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #d81b60;
+            margin: 10px;
+        }
+        p {
+            font-size: 1.5em;
+            color: #333;
+            margin: 10px;
+        }
+        #scrambled {
+            font-size: 4em;
+            margin: 15px;
+            letter-spacing: 8px;
+            color: #333;
+        }
+        .option {
+            font-size: 2.2em;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f3d3aa;
+            display: inline-block;
+            width: 220px;
+            border-radius: 8px;
+        }
+        .option:hover {
+            background-color: #e0f7ff;
+        }
+        #result {
+            font-size: 1.2em;
+            margin: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        select {
+            padding: 5px;
+            font-size: 1em;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .back-button {
+            background-color: #ff69b4;
+            font-size: 1.5em;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #db7093;
+        }
+        @media (max-width: 320px) {
+            h1 { font-size: 1.8em; }
+            p { font-size: 1.3em; }
+            #scrambled { font-size: 1.8em; letter-spacing: 6px; }
+            .option { width: 100px; font-size: 1em; padding: 8px; }
+            select { font-size: 0.9em; }
+            .back-button { font-size: 1.2em; padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Word Scramble </h1>
+        <p>Choose difficulty and unscramble the word!</p>
+        <select id="difficulty" onchange="newWord()" ontouchstart="newWord()">
+            <option value="easy">Easy (3-4 letters)</option>
+            <option value="medium">Medium (5-6 letters)</option>
+            <option value="hard">Hard (7+ letters)</option>
+        </select>
+        <div id="scrambled">_ _ _ _</div>
+        <div id="options"></div>
+        <div id="result"></div>
+        <a href="ch2.html" class="back-button" ontouchstart="window.location.href='ch2.html'">⬅️ Back</a>
+    </div>
+    <script>
+        const easyWords = [
+            "cat", "dog", "bird", "fish", "sun", "hat", "pen", "cake", "book", "tree",
+            "milk", "ball", "star", "duck", "shoe", "baby", "leaf", "lion"
+        ];
+        const mediumWords = [
+            "apple", "train", "cloud", "happy", "house", "chair", "pencil", "monkey", "flower",
+            "planet", "rocket", "window", "garden", "basket", "school", "laptop", "cookie", "guitar"
+        ];
+        const hardWords = [
+            "elephant", "trolley", "umbrella", "giraffe", "computer", "sandwich", "backpack",
+            "airplane", "crocodile", "binoculars", "playground", "chocolate", "microscope",
+            "snowflake", "adventure", "telephone", "kangaroo", "vegetable", "butterfly"
+        ];
+
+        let currentWord = "";
+        let scrambled = "";
+        let options = [];
+        let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+
+        function shuffle(word) {
+            return word.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        function newWord() {
+            const difficulty = document.getElementById("difficulty").value;
+            let wordList = difficulty === "easy" ? easyWords : difficulty === "medium" ? mediumWords : hardWords;
+
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            scrambled = shuffle(currentWord);
+            while (scrambled === currentWord) scrambled = shuffle(currentWord);
+
+            generateOptions(wordList);
+
+            document.getElementById("scrambled").textContent = scrambled;
+            let optionsHtml = "";
+            options.forEach(opt => {
+                optionsHtml += `<div class="option" onclick="checkGuess('${opt}')" ontouchstart="checkGuess('${opt}')">${opt}</div>`;
+            });
+
+            document.getElementById("options").innerHTML = optionsHtml;
+            document.getElementById("result").textContent = "";
+        }
+
+        function generateOptions(wordList) {
+            options = [currentWord];
+            while (options.length < 4) {
+                const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+                if (!options.includes(randomWord)) options.push(randomWord);
+            }
+            options.sort(() => Math.random() - 0.5);
+        }
+
+        function checkGuess(selectedOption) {
+            if (selectedOption === currentWord) {
+                totalCoins += 5;
+                localStorage.setItem('totalCoins', totalCoins);
+                document.getElementById("result").textContent = "🎉 Correct! +5 coins!";
+                setTimeout(newWord, 1000);
+            } else {
+                document.getElementById("result").textContent = "😔 Try again!";
+            }
+        }
+
+        newWord();
+    </script>
+</body>
+</html>

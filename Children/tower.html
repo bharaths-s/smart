@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower of Hanoi for Kids</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .tower {
+            width: 200px;
+            height: 350px;
+            background-color: #ddd;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            border-bottom: 10px solid #333;
+            margin: 0 20px;
+            padding-bottom: 10px;
+        }
+        .disk {
+            height: 36px;
+            border-radius: 10px;
+            cursor: move;
+            transition: all 0.2s;
+            margin: 2px 0;
+            align-self: center;
+        }
+        .disk-1 { width: 40px; background-color: #ff5555; }
+        .disk-2 { width: 60px; background-color: #55ff55; }
+        .disk-3 { width: 80px; background-color: #5555ff; }
+        .disk-4 { width: 100px; background-color: #ffff55; }
+        #message {
+            font-size: 30px;
+            margin: 20px;
+            color: #333;
+        }
+        button {
+            padding: 15px 15px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .back-button {
+            background-color: #2196F3;
+        }
+        .back-button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tower of Hanoi Game</h1>
+    <p style ="font-size:20px; color:#ff5555">Move all disks to another tower. Bigger disks can't go on smaller ones!</p>
+    <div id="message">Let's start! Drag disks to move them.</div>
+    <div class="game-container">
+        <div class="tower" id="tower1">
+            <div class="disk disk-4" id="disk4" draggable="true"></div>
+            <div class="disk disk-3" id="disk3" draggable="true"></div>
+            <div class="disk disk-2" id="disk2" draggable="true"></div>
+            <div class="disk disk-1" id="disk1" draggable="true"></div>
+        </div>
+        <div class="tower" id="tower2"></div>
+        <div class="tower" id="tower3"></div>
+    </div>
+    <button onclick="resetGame()">Reset Game</button>
+    <button onclick="location.href='ch2.html'" class="back-button">⬅️ Back</button>
+
+    <script>
+        let moveCount = 0;
+        let selectedDisk = null;
+
+        const towers = document.querySelectorAll('.tower');
+        const message = document.getElementById('message');
+
+        towers.forEach(tower => {
+            tower.addEventListener('dragover', e => e.preventDefault());
+            tower.addEventListener('drop', handleDrop);
+            tower.addEventListener('dragstart', handleDragStart);
+        });
+
+        function handleDragStart(e) {
+            if (e.target.classList.contains('disk')) {
+                selectedDisk = e.target;
+                e.dataTransfer.setData('text', e.target.id);
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const diskId = e.dataTransfer.getData('text');
+            const disk = document.getElementById(diskId);
+            const targetTower = e.currentTarget;
+
+            if (canPlaceDisk(disk, targetTower)) {
+                targetTower.appendChild(disk);
+                moveCount++;
+                message.textContent = `Move ${moveCount}: Good move!`;
+                checkWin();
+            } else {
+                message.textContent = `Move ${moveCount + 1}: Can't place there! Try again.`;
+            }
+        }
+
+        function canPlaceDisk(disk, tower) {
+            const disksInTower = tower.querySelectorAll('.disk');
+            if (disksInTower.length === 0) return true;
+
+            const topDisk = disksInTower[0];
+            const diskSize = parseInt(disk.className.match(/disk-(\d)/)[1]);
+            const topDiskSize = parseInt(topDisk.className.match(/disk-(\d)/)[1]);
+
+            return diskSize < topDiskSize;
+        }
+
+        function checkWin() {
+            const tower2 = document.getElementById('tower2');
+            const tower3 = document.getElementById('tower3');
+            if (tower2.children.length === 4 || tower3.children.length === 4) {
+                message.textContent = `You won in ${moveCount} moves! Great job!`;
+                towers.forEach(tower => {
+                    tower.removeEventListener('drop', handleDrop);
+                    tower.removeEventListener('dragstart', handleDragStart);
+                });
+            }
+        }
+
+        function resetGame() {
+            const tower1 = document.getElementById('tower1');
+            const tower2 = document.getElementById('tower2');
+            const tower3 = document.getElementById('tower3');
+            tower1.innerHTML = `
+                <div class="disk disk-4" id="disk4" draggable="true"></div>
+                <div class="disk disk-3" id="disk3" draggable="true"></div>
+                <div class="disk disk-2" id="disk2" draggable="true"></div>
+                <div class="disk disk-1" id="disk1" draggable="true"></div>
+            `;
+            tower2.innerHTML = '';
+            tower3.innerHTML = '';
+            moveCount = 0;
+            message.textContent = "Let's start! Drag disks to move them.";
+            towers.forEach(tower => {
+                tower.addEventListener('dragover', e => e.preventDefault());
+                tower.addEventListener('drop', handleDrop);
+                tower.addEventListener('dragstart', handleDragStart);
+            });
+        }
+    </script>
+</body>
+</html>

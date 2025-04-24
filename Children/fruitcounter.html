@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Counter Game</title>
+    <style>
+        body { 
+            background: #fffacd; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .container { 
+            text-align: center; 
+            padding: 10px;
+            max-width: 300px;
+        }
+        #fruits { 
+            font-size: 60px; 
+            margin: 15px; 
+            line-height: 1.2;
+        }
+        .buttons { 
+            display: flex; 
+            gap: 15px; 
+            justify-content: center; 
+            flex-wrap: wrap;
+        }
+        .btn { 
+            width: 80px; 
+            height: 80px; 
+            background: #ffa500; 
+            color: white; 
+            font-size: 32px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+        .btn:hover {
+            background: #ff8c00;
+        }
+        #message { 
+            font-size: 1.5em; 
+            color: #ff4500; 
+            margin-top: 15px;
+        }
+        .back-button {
+            background-color: #ff69b4;
+            font-size: 1.5em;
+            font-family: 'Comic Sans MS', sans-serif;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #db7093;
+        }
+        @media (max-width: 320px) {
+            #fruits { 
+                font-size: 50px; 
+            }
+            .btn { 
+                width: 60px; 
+                height: 60px; 
+                font-size: 24px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="fruits"></div>
+        <div class="buttons">
+            <button class="btn" onclick="checkCount(1)" ontouchstart="checkCount(1)">1</button>
+            <button class="btn" onclick="checkCount(2)" ontouchstart="checkCount(2)">2</button>
+            <button class="btn" onclick="checkCount(3)" ontouchstart="checkCount(3)">3</button>
+            <button class="btn" onclick="checkCount(4)" ontouchstart="checkCount(4)">4</button>
+            <button class="btn" onclick="checkCount(5)" ontouchstart="checkCount(5)">5</button>
+        </div>
+        <div id="message">Count the fruits and tap a number!</div>
+        <a href="ch2.html" class="back-button" ontouchstart="window.location.href='kids_fun_learning.html'">⬅️ Back</a>
+    </div>
+
+    <script>
+        const questions = [
+            { count: 2, fruit: '🍎' },
+            { count: 3, fruit: '🍌' },
+            { count: 1, fruit: '🍇' },
+            { count: 4, fruit: '🍓' },
+            { count: 5, fruit: '🍊' }
+        ];
+        let currentQuestionIndex = 0;
+        let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+
+        function newFruits() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById('fruits').textContent = currentQuestion.fruit.repeat(currentQuestion.count);
+            document.getElementById('message').textContent = 'Count the fruits and tap a number!';
+        }
+
+        function checkCount(selected) {
+            const currentQuestion = questions[currentQuestionIndex];
+            if (selected === currentQuestion.count) {
+                document.getElementById('message').textContent = 'Awesome! 🎉';
+                totalCoins += 5;
+                localStorage.setItem('totalCoins', totalCoins);
+                currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+                setTimeout(newFruits, 1000);
+            } else {
+                document.getElementById('message').textContent = 'Try Again! 😔';
+            }
+        }
+
+        newFruits();
+    </script>
+</body>
+</html>

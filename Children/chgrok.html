@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Fun Learning</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            margin: 0;
+            padding: 5px; /* Minimal padding for small screen */
+        }
+        
+        .container {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 40px; /* Increased padding */
+            margin: 5px auto;
+            max-width: 95%; /* Wider for TFT */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #age-selection {
+            min-height: 80vh; /* Taller container for starting page */
+        }
+        
+        #age-3-6, #age-7-10, #age-11-13 {
+            min-height: 80vh; /* Taller containers for age groups */
+        }
+        
+        #age-selection h1 {
+            color: #ea34c0;
+            font-size: 3.5em; /* Large title for starting page */
+            margin: 0.2em 0;
+        }
+        
+        #age-selection p {
+            font-size: 2em; /* Large instruction text */
+            color: #333;
+        }
+        
+        .age-buttons button {
+            background-color: #dd560d;
+            color: white;
+            border: none;
+            padding: 25px 50px; /* Large padding for touch */
+            margin: 20px auto; /* More margin for spacing */
+            font-size: 3.8em; /* Large button text */
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block; /* Stack vertically */
+            width: 90%; /* Wide buttons */
+        }
+        
+        .age-buttons button:hover {
+            background-color: #e97924;
+        }
+        
+        .game-buttons button, .game-buttons a {
+            background-color: #c6479b;
+            color: white;
+            border: none;
+            padding: 20px 40px; /* Larger padding */
+            margin: 10px auto;
+            font-size: 2.5em; /* Larger button text */
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: block; /* Stack vertically for 3-6 */
+            width: 80%; /* Wide buttons */
+        }
+        
+        .game-buttons button:hover, .game-buttons a:hover {
+            background-color: #3caae5;
+        }
+        
+        .difficulty button {
+            background-color: #32cd32;
+            color: white;
+            border: none;
+            padding: 20px 40px; /* Larger padding */
+            margin: 10px;
+            font-size: 6.5em; /* Larger button text */
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .difficulty button:hover {
+            background-color: #228b22;
+        }
+        
+        .game-area {
+            margin: 20px 0;
+            font-size: 1.8em; /* Larger question text */
+            color: #333;
+        }
+        
+        .game-area button {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 12px 24px; /* Slightly larger */
+            margin: 5px;
+            font-size: 1.2em; /* Larger answer button text */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .game-area button:hover {
+            background-color: #4682b4;
+        }
+        
+        #next-3-6, #next-7-10, #next-11-13 {
+            background-color: #ff69b4;
+            font-size: 1.5em; /* Larger next button */
+            padding: 12px 24px;
+            border-radius: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .feedback {
+            font-size: 1.4em; /* Larger feedback text */
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        #score-3-6, #score-7-10, #score-11-13 {
+            font-size: 1.5em; /* Larger score text */
+            color: #ff4500;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        #profile-toggle {
+            position: fixed;
+            top: 8px; /* Adjusted for larger button */
+            right: 8px; /* Adjusted for larger button */
+            background-color: #ffd700;
+            color: #333;
+            border: none;
+            padding: 15px 30px; /* Larger padding for bigger button */
+            font-size: 1.5em; /* Larger font size */
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+        
+        #profile-toggle:hover {
+            background-color: #e6c200;
+        }
+        
+        #profile-section {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 5px auto;
+            max-width: 95%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #profile-section button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #profile-section button:hover {
+            background-color: #db7093;
+        }
+        
+        #total-coins {
+            font-size: 1.4em;
+            color: #ff4500;
+            font-weight: bold;
+        }
+        
+        #badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .badge {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin: 5px;
+        }
+        
+        #bronze-badge:not(.hidden) {
+            background-color: #cd7f32;
+            color: white;
+        }
+        
+        #silver-badge:not(.hidden) {
+            background-color: #c0c0c0;
+            color: white;
+        }
+        
+        #gold-badge:not(.hidden) {
+            background-color: #ffd700;
+            color: #333;
+        }
+        
+        #diamond-badge:not(.hidden) {
+            background-color: #b9f2ff;
+            color: #333;
+        }
+        
+        /* General styles for age group sections */
+        .container:not(#age-selection) h1 {
+            color: #ff4500;
+            font-size: 2.5em; /* Larger title */
+            margin: 0.5em 0;
+        }
+        
+        .container:not(#age-selection) p {
+            font-size: 1.5em; /* Larger text */
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Profile Button -->
+    <button id="profile-toggle" class="profile-btn" onclick="toggleProfile()">Profile</button>
+
+    <!-- Profile Section -->
+    <div id="profile-section" class="container hidden">
+        <h1>Your Profile</h1>
+        <p id="total-coins">Total Coins: 0</p>
+        <h2>Badges</h2>
+        <div id="badges">
+            <p id="bronze-badge" class="badge hidden">Bronze Badge (300 Coins)</p>
+            <p id="silver-badge" class="badge hidden">Silver Badge (500 Coins)</p>
+            <p id="gold-badge" class="badge hidden">Gold Badge (1000 Coins)</p>
+            <p id="diamond-badge" class="badge hidden">Diamond Badge (2000 Coins)</p>
+        </div>
+        <button onclick="toggleProfile()">Close</button>
+    </div>
+
+    <!-- Age Selection Page -->
+    <div id="age-selection" class="container">
+        <h1>Welcome to Kids Fun Learning!</h1>
+        <p>Please select your age group:</p>
+        <div class="age-buttons">
+            <button onclick="selectAge('3-6')">3-6 Years</button>
+            <button onclick="selectAge('7-10')">7-10 Years</button>
+            <button onclick="selectAge('11-13')">11-13 Years</button>
+        </div>
+    </div>
+
+    <!-- 3-6 Years Section -->
+    <div id="age-3-6" class="container hidden">
+        <h1>Fun Games for 3-6 Years</h1>
+        <div class="game-buttons">
+            <button onclick="startGame('3-6')">Start Game</button>
+            <a href="history game.html">General Knowledge</a>
+            <a href="pp2.html">Drawing Room</a>
+        </div>
+        <div id="game-3-6" class="game-area"></div>
+        <p id="score-3-6">Score: 0</p>
+        <button id="next-3-6" class="hidden" onclick="nextQuestion('3-6')">Next</button>
+    </div>
+
+    <!-- 7-10 Years Section -->
+    <div id="age-7-10" class="container hidden">
+        <h1>Puzzles for 7-10 Years</h1>
+        <div class="difficulty">
+            <button onclick="startGame('7-10', 'easy')">Easy</button>
+            <button onclick="startGame('7-10', 'medium')">Medium</button>
+            <button onclick="startGame('7-10', 'hard')">Hard</button>
+        </div>
+        <div id="game-7-10" class="game-area"></div>
+        <p id="score-7-10">Score: 0</p>
+        <button id="next-7-10" class="hidden" onclick="nextQuestion('7-10')">Next</button>
+    </div>
+
+    <!-- 11-13 Years Section -->
+    <div id="age-11-13" class="container hidden">
+        <h1>Challenges for 11-13 Years</h1>
+        <div class="difficulty">
+            <button onclick="startGame('11-13', 'easy')">Easy</button>
+            <button onclick="startGame('11-13', 'medium')">Medium</button>
+            <button onclick="startGame('11-13', 'hard')">Hard</button>
+        </div>
+        <div id="game-11-13" class="game-area"></div>
+        <p id="score-11-13">Score: 0</p>
+        <button id="next-11-13" class="hidden" onclick="nextQuestion('11-13')">Next</button>
+    </div>
+
+    <script>
+        let currentAgeGroup = '';
+        let currentDifficulty = '';
+        let score = 0;
+        let totalCoins = 0;
+        let currentQuestion = {};
+
+        const questions3_6 = [
+            { type: 'missing-number', question: 'What number comes next: 1, 2, 3, ?', options: ['4', '5', '6', '7'], answer: '4' },
+            { type: 'missing-alphabet', question: 'What letter comes next: A, B, C, ?', options: ['D', 'E', 'F', 'G'], answer: 'D' },
+            { type: 'animal', question: 'Which animal says "Meow"?', options: ['Dog', 'Cat', 'Cow', 'Sheep'], answer: 'Cat' },
+            { type: 'rhyme', question: 'What rhymes with "Hat"?', options: ['Cat', 'Dog', 'Frog', 'Log'], answer: 'Cat' },
+            { type: 'missing-number', question: 'What number is missing: 2, 4, ?, 8', options: ['5', '6', '7', '10'], answer: '6' },
+            { type: 'missing-alphabet', question: 'What letter is missing: A, ?, C, D', options: ['B', 'E', 'F', 'G'], answer: 'B' },
+            { type: 'animal', question: 'Which animal lives in water?', options: ['Lion', 'Fish', 'Elephant', 'Tiger'], answer: 'Fish' },
+            { type: 'rhyme', question: 'What rhymes with "Tree"?', options: ['Bee', 'Car', 'Jar', 'Far'], answer: 'Bee' },
+            { type: 'missing-number', question: 'What number is missing: 5, 10, ?, 20', options: ['12', '15', '18', '25'], answer: '15' },
+            { type: 'missing-alphabet', question: 'What letter is missing: ?, K, M, O', options: ['I', 'J', 'L', 'N'], answer: 'J' },
+            { type: 'animal', question: 'Which animal has a long neck?', options: ['Giraffe', 'Zebra', 'Horse', 'Donkey'], answer: 'Giraffe' },
+            { type: 'rhyme', question: 'What rhymes with "Moon"?', options: ['Spoon', 'Star', 'Car', 'Jar'], answer: 'Spoon' }
+        ];
+
+        const questions7_10 = {
+            easy: [
+                { type: 'arithmetic', question: 'What is 2 + 3?', options: ['4', '5', '6', '7'], answer: '5' },
+                { type: 'missing-letters', question: 'Fill the blank: C _ T', options: ['A', 'O', 'I', 'U'], answer: 'A' },
+                { type: 'puzzle', question: 'If the day after tomorrow is Wednesday, what day is today?', options: ['Monday', 'Tuesday', 'Sunday', 'Friday'], answer: 'Monday' },
+                { type: 'language', question: 'What is the opposite of Big?', options: ['Small', 'Tall', 'Long', 'Wide'], answer: 'Small' }
+            ],
+            medium: [
+                { type: 'arithmetic', question: 'What is 12 - 5?', options: ['6', '7', '8', '9'], answer: '7' },
+                { type: 'missing-letters', question: 'Fill the blank: J _ L _ B I', options: ['A, E', 'E, B', 'A, B', 'I, E'], answer: 'A, E' },
+                { type: 'puzzle', question: 'If 2 apples cost 10, how much do 4 apples cost?', options: ['15', '20', '25', '30'], answer: '20' },
+                { type: 'language', question: 'What is a synonym for Happy?', options: ['Sad', 'Joyful', 'Angry', 'Tired'], answer: 'Joyful' }
+            ],
+            hard: [
+                { type: 'arithmetic', question: 'What is 6 × 3?', options: ['12', '15', '18', '21'], answer: '18' },
+                { type: 'missing-letters', question: 'Fill the blank: S _ N _ H I _ E', options: ['U, F, N', 'A, G, N', 'U, G, N', 'A, F, N'], answer: 'U, G, N' },
+                { type: 'puzzle', question: 'If a car travels 60 km in 1 hour, how far in 2 hours?', options: ['100 km', '120 km', '140 km', '160 km'], answer: '120 km' },
+                { type: 'language', question: 'What is a synonym for Quick?', options: ['Slow', 'Fast', 'Heavy', 'Light'], answer: 'Fast' }
+            ]
+        };
+
+        const questions11_13 = {
+            easy: [
+                { type: 'gk', question: 'What is the capital of France?', options: ['Paris', 'London', 'Rome', 'Berlin'], answer: 'Paris' },
+                { type: 'missing-words', question: 'The sun is very ____.', options: ['hot', 'cold', 'blue', 'small'], answer: 'hot' }
+            ],
+            medium: [
+                { type: 'gk', question: 'Which planet is known as the Red Planet?', options: ['Mars', 'Jupiter', 'Venus', 'Mercury'], answer: 'Mars' },
+                { type: 'missing-words', question: 'The ____ is the largest ocean.', options: ['Pacific', 'Atlantic', 'Indian', 'Arctic'], answer: 'Pacific' }
+            ],
+            hard: [
+                { type: 'gk', question: 'Who wrote the play "Romeo and Juliet"?', options: ['William Shakespeare', 'Charles Dickens', 'Jane Austen', 'Mark Twain'], answer: 'William Shakespeare' },
+                { type: 'missing-words', question: 'The theory of relativity was developed by ____.', options: ['Albert Einstein', 'Isaac Newton', 'Galileo Galilei', 'Nikola Tesla'], answer: 'Albert Einstein' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+            updateProfile();
+        });
+
+        function toggleProfile() {
+            const profileSection = document.getElementById('profile-section');
+            const ageSelection = document.getElementById('age-selection');
+            const ageSections = ['age-3-6', 'age-7-10', 'age-11-13'].map(id => document.getElementById(id));
+
+            if (profileSection.classList.contains('hidden')) {
+                profileSection.classList.remove('hidden');
+                ageSelection.classList.add('hidden');
+                ageSections.forEach(section => section.classList.add('hidden'));
+                updateProfile();
+            } else {
+                profileSection.classList.add('hidden');
+                ageSelection.classList.remove('hidden');
+            }
+        }
+
+        function updateProfile() {
+            document.getElementById('total-coins').textContent = `Total Coins: ${totalCoins}`;
+            document.getElementById('bronze-badge').classList.toggle('hidden', totalCoins < 300);
+            document.getElementById('silver-badge').classList.toggle('hidden', totalCoins < 500);
+            document.getElementById('gold-badge').classList.toggle('hidden', totalCoins < 1000);
+            document.getElementById('diamond-badge').classList.toggle('hidden', totalCoins < 2000);
+            localStorage.setItem('totalCoins', totalCoins);
+        }
+
+        function selectAge(ageGroup) {
+            currentAgeGroup = ageGroup;
+            document.getElementById('age-selection').classList.add('hidden');
+            document.getElementById(`age-${ageGroup}`).classList.remove('hidden');
+            score = 0;
+            document.getElementById(`score-${ageGroup}`).textContent = `Score: ${score}`;
+            updateProfile();
+        }
+
+        function startGame(ageGroup, difficulty = '') {
+            currentDifficulty = difficulty;
+            score = 0;
+            document.getElementById(`score-${ageGroup}`).textContent = `Score: ${score}`;
+            nextQuestion(ageGroup);
+        }
+
+        function nextQuestion(ageGroup) {
+            let questions;
+            if (ageGroup === '3-6') questions = questions3_6;
+            else if (ageGroup === '7-10') questions = questions7_10[currentDifficulty];
+            else questions = questions11_13[currentDifficulty];
+
+            currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+            const gameArea = document.getElementById(`game-${ageGroup}`);
+            gameArea.innerHTML = `
+                <p>${currentQuestion.question}</p>
+                ${currentQuestion.options.map(option => `
+                    <button onclick="checkAnswer('${option}', '${ageGroup}')">${option}</button>
+                `).join('')}
+                <p id="feedback-${ageGroup}" class="feedback"></p>
+            `;
+            document.getElementById(`next-${ageGroup}`).classList.add('hidden');
+        }
+
+        function checkAnswer(selected, ageGroup) {
+            const feedback = document.getElementById(`feedback-${ageGroup}`);
+            let points = 0;
+            if (selected === currentQuestion.answer) {
+                if (ageGroup === '3-6') {
+                    points = 5;
+                    feedback.textContent = 'Correct! You earned 5 points!';
+                } else if (currentDifficulty === 'easy') {
+                    points = 5;
+                    feedback.textContent = 'Correct! You earned 5 points!';
+                } else if (currentDifficulty === 'medium') {
+                    points = 7;
+                    feedback.textContent = 'Correct! You earned 7 points!';
+                } else if (currentDifficulty === 'hard') {
+                    points = 10;
+                    feedback.textContent = 'Correct! You earned 10 points!';
+                }
+                score += points;
+                totalCoins += points;
+                feedback.style.color = 'green';
+            } else {
+                feedback.textContent = `Oops! The correct answer is ${currentQuestion.answer}.`;
+                feedback.style.color = 'red';
+            }
+            document.getElementById(`score-${ageGroup}`).textContent = `Score: ${score}`;
+            document.getElementById(`next-${ageGroup}`).classList.remove('hidden');
+            updateProfile();
+        }
+    </script>
+</body>
+</html>

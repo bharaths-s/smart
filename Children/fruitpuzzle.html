@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Memory Match Game</title>
+    <style>
+        body {
+            background: #f0f8ff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 8px;
+        }
+        .game {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 10px;
+            justify-content: center;
+            max-width: 350px;
+            margin: 0 auto;
+            overflow-x: auto;
+            touch-action: pan-x;
+        }
+        .card {
+            width: 80px;
+            height: 100px;
+            background: #87ceeb;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .card.flipped {
+            background: #f7f6f5;
+        }
+        .card.matched {
+            background: #32cd32;
+        }
+        #message {
+            font-size: 1.2em;
+            font-family: 'Comic Sans MS', sans-serif;
+            color: #ff4500;
+            margin-bottom: 15px;
+        }
+        #reset {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: #4682b4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #reset:hover {
+            background: #4169e1;
+        }
+        .back-button {
+            background-color: #ff69b4;
+            font-size: 1.5em;
+            font-family: 'Comic Sans MS', sans-serif;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #db7093;
+        }
+        @media (max-width: 320px) {
+            .game {
+                grid-template-columns: repeat(4, 70px);
+                max-width: 310px;
+            }
+            .card {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="message">Flip a card to start!</div>
+        <div class="game" id="game"></div>
+        <button id="reset" onclick="resetGame()" ontouchstart="resetGame()">Reset Game</button>
+        <a href="ch2.html" class="back-button" ontouchstart="window.location.href='kids_fun_learning.html'">⬅️ Back</a>
+    </div>
+    
+    <script>
+        const fruits = [
+            '🍎', '🍎', // Apple
+            '🍌', '🍌', // Banana
+            '🍇', '🍇', // Grapes
+            '🍉', '🍉', // Watermelon
+            '🍓', '🍓', // Strawberry
+            '🍍', '🍍', // Pineapple
+            '🥭', '🥭', // Mango
+            '🍊', '🍊'  // Orange
+        ];
+        let flipped = [];
+        let matched = [];
+        let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initGame() {
+            shuffle(fruits);
+            const game = document.getElementById('game');
+            game.innerHTML = fruits.map((fruit, idx) => 
+                `<div class="card" data-id="${idx}" data-value="${fruit}" onclick="flipCard(${idx})" ontouchstart="flipCard(${idx})"></div>`).join('');
+            document.getElementById('message').textContent = 'Flip a card to start!';
+        }
+
+        function flipCard(idx) {
+            const card = document.querySelector(`[data-id="${idx}"]`);
+            if (flipped.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                card.classList.add('flipped');
+                card.textContent = card.dataset.value;
+                flipped.push(card);
+
+                if (flipped.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            if (flipped[0].dataset.value === flipped[1].dataset.value) {
+                flipped.forEach(card => card.classList.add('matched'));
+                matched.push(...flipped);
+                totalCoins += 5; // Award 5 coins per match
+                localStorage.setItem('totalCoins', totalCoins);
+                document.getElementById('message').textContent = 'Match found! 🎉 +5 coins!';
+                if (matched.length === fruits.length) {
+                    document.getElementById('message').textContent = 'You Win! 🎉';
+                }
+            } else {
+                flipped.forEach(card => {
+                    card.classList.remove('flipped');
+                    card.textContent = '';
+                });
+                document.getElementById('message').textContent = 'Try again! 😊';
+            }
+            flipped = [];
+        }
+
+        function resetGame() {
+            flipped = [];
+            matched = [];
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
